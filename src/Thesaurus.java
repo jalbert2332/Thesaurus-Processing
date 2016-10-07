@@ -10,7 +10,9 @@ public class Thesaurus {
 	Thesaurus(){
 		this.rootSynonymMap = new HashMap<String, Synonyms>();
 	}
-	
+	//The input expected input is text doc of roots and synonyms. Each line is a comma delimited list of words where the root 
+	//is the first word and all other words on the line are synonyms.
+	//For example: "root,synonym1,synonym2,synonym3..."
 	//build thesaurus from lines of root -> synonym mappings
 	public static Thesaurus buildThesaurus(ArrayList<String> lines){
 		Thesaurus thesaurus = new Thesaurus();

@@ -6,8 +6,18 @@ import java.util.Set;
 public class Test {
 	public static void main(String args[]){
 		//build thesaurus
-		ArrayList<String> lines = Parser.readInLines(args[0]);
-		Thesaurus thesaurus = Thesaurus.buildThesaurus(lines);
+		Parser thesaurusParser = new Parser();
+		ArrayList<String> thesaurusLines = thesaurusParser.readInLines(args[0]);
+		Thesaurus thesaurus = Thesaurus.buildThesaurus(thesaurusLines);
+		//get test text
+		ArrayList<String> text = new ArrayList<String>();
+		Parser storyParser = new Parser();
+		text = storyParser.readInLines(args[1]);
+		storyParser.removeEmptyLines();
+		storyParser.writeToFile(args[2]);
+	}
+	
+	public static void testAssociations(Thesaurus thesaurus, String[] args, ArrayList<String> lines){
 		//test associations
 		WordProcessor process = new WordProcessor(thesaurus);
 		Set<String> associations = process.getAssociations(args[1],Integer.parseInt(args[2]));
