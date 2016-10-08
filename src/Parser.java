@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Scanner;
 
@@ -51,7 +52,7 @@ public class Parser {
 			new FileOutputStream(fileName), "utf-8"))) {
 				for(String line : this.lines){
 					writer.write(line);
-					//((BufferedWriter) writer).newLine();
+					((BufferedWriter) writer).newLine();
 				}
 				writer.close();
 				return true;
@@ -62,6 +63,15 @@ public class Parser {
 			} catch (IOException e) {
 				return false;
 			}
+	}
+	
+	public ArrayList<String> getWords(){
+		ArrayList<String> words = new ArrayList<String>();
+		for(String line : this.lines){
+			line.replaceAll("\\p{P}", "");
+			words.addAll(Arrays.asList(line.split(" ")));
+		}
+		return words;
 	}
 	
 	
