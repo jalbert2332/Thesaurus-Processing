@@ -1,0 +1,3 @@
+# Thesaurus-Processing
+Going to mess around with simple semantic analysis of text. Just starting off by building a thesaurus and categorizing sad and happy words.
+Going to run various short stories through it. From there who knows...
