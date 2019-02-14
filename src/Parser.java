@@ -8,36 +8,57 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 
 public class Parser {
-	ArrayList<String> lines;
-	//The input expected input is text doc of roots and synonyms. Each line is a comma delimited list of words where the root 
-	//is the first word and all other words on the line are synonyms.
+	private ArrayList<String> lines;
+	public List<String> getLines() {
+		return Collections.unmodifiableList(this.lines);
+	}
+
+	private ArrayList<String> words;
+	public List<String> getWords() {
+		return Collections.unmodifiableList(this.words);
+	}
+
+	//The input expected input is text doc of lines
+	// The text document will be read in and an arraylist of all lines(empty lines will be removed) and words will be created
 	//For example: "root,synonym1,synonym2,synonym3..."
-	Parser(){
+	Parser(String absoluteFilePath){
 		this.lines = new ArrayList<String>();
+		this.words = new ArrayList<String>();
+		this.readInFile(absoluteFilePath);
 	}
 	
-	public ArrayList<String> readInLines(String fileName){
+	private void readInFile(String fileName) {
 		File file = new File(fileName);
+		// get each line of the file
+		this.readInLines(file);
+		// clean up text
+		this.removeEmptyLines();
+		// parse to individual words
+		this.readInWords();
+	}
+	
+	private void readInLines(File file){
 		Scanner scan;
 		try {
 			scan = new Scanner(file);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return this.lines;
+			return;
 		}
 		while( scan.hasNextLine() ){
 			this.lines.add(scan.nextLine());
 		}
 		scan.close();
-		return this.lines;
 	}
 	
-	public void removeEmptyLines(){
+	private void removeEmptyLines(){
 		for (Iterator<String> iterator = this.lines.iterator(); iterator.hasNext();) {
 		    String line = iterator.next();
 		    if (line.isEmpty()) {
@@ -65,16 +86,14 @@ public class Parser {
 			}
 	}
 	
-	public ArrayList<String> getWords(){
-		ArrayList<String> words = new ArrayList<String>();
-		for(String line : this.lines){
-			line.replaceAll("\\p{P}", "");
-			words.addAll(Arrays.asList(line.split(" ")));
+	private void readInWords(){
+		if (this.words.isEmpty() && !this.lines.isEmpty()){
+			for(String line : this.lines){
+				line.replaceAll("\\p{P}", "");
+				this.words.addAll(Arrays.asList(line.split(" |,"))); // split on "," and " " Probably need more robust solution one day
+			}
 		}
-		return words;
 	}
-	
-	
 }
 
 

@@ -1,7 +1,7 @@
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Thesaurus {
@@ -10,17 +10,24 @@ public class Thesaurus {
 	Thesaurus(){
 		this.rootSynonymMap = new HashMap<String, Synonyms>();
 	}
-	//The input expected input is text doc of roots and synonyms. Each line is a comma delimited list of words where the root 
-	//is the first word and all other words on the line are synonyms.
+	
+	//The input expected is the absolute path to a file of lines where each line is a mapping of a root word to its descendants
+    //Each line is a comma delimited list where the first word is the root and all others synonyms
 	//For example: "root,synonym1,synonym2,synonym3..."
-	//build thesaurus from lines of root -> synonym mappings
-	public static Thesaurus buildThesaurus(ArrayList<String> lines){
-		Thesaurus thesaurus = new Thesaurus();
-		
+	public void buildThesaurusFromFile(String absoluteFilePath) {
+		this.rootSynonymMap.clear();
+		Parser parsedFile = new Parser(absoluteFilePath);
+		buildThesaurus(parsedFile.getLines());
+	}
+	
+	//The input expected is a list of lines where each line is a mapping of a root word to its descendants
+	//Each line is a comma delimited list where the first word is the root and all others synonyms
+	//For example: "root,synonym1,synonym2,synonym3..."
+	private void buildThesaurus(List<String> lines){
+		// for each word, map it to its synonyms
 		for(String line : lines ){
-			thesaurus.addMapping(line);
+			this.addMapping(line);
 		}
-		return thesaurus;
 	}
 	
 	//add a root to synonym mapping to the thesaurus
@@ -34,6 +41,9 @@ public class Thesaurus {
 	private Synonyms addSynonyms(String[] words){
 		Synonyms synonyms = new Synonyms();
 		for( int i = 1 ; i < words.length ; i++ ){
+			if ( synonyms.contains(words[i]) ){
+				continue;
+			}
 			synonyms.add(words[i]);
 		}
 		return synonyms;
@@ -53,15 +63,11 @@ public class Thesaurus {
 			this.synonyms = new HashSet<String>();
 		}
 		
-		public void add(String synonym){
+		private void add(String synonym){
 			this.synonyms.add(synonym);
 		}
 		
-		public void remove(String synonym){
-			this.synonyms.remove(synonym);		
-		}
-		
-		public boolean contains(String synonym){
+		private boolean contains(String synonym){
 			return this.synonyms.contains(synonym);
 		}
 		

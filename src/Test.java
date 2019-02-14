@@ -1,30 +1,29 @@
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 public class Test {
 	public static void main(String args[]){
 		//build thesaurus
-		Parser thesaurusParser = new Parser();
-		ArrayList<String> thesaurusLines = thesaurusParser.readInLines(args[0]);
-		Thesaurus thesaurus = Thesaurus.buildThesaurus(thesaurusLines);
-		//get test text
-		ArrayList<String> text = new ArrayList<String>();
-		Parser storyParser = new Parser();
-		text = storyParser.readInLines(args[1]);
-		storyParser.removeEmptyLines();
-		storyParser.writeToFile(args[2]);
+		Thesaurus thesaurus = new Thesaurus();
+		thesaurus.buildThesaurusFromFile(args[0]);
+		
+		ArrayList<String> baseWords = new ArrayList<String>();
+		baseWords.add("happy");
+		baseWords.add("sad");
+				
+		testAssociations(thesaurus, new Parser(args[1]).getWords(), baseWords, 1); // args[1] contains absolute file path to short story
 	}
 	
-	public static void testAssociations(Thesaurus thesaurus, String[] args, ArrayList<String> lines){
+	public static void testAssociations(Thesaurus thesaurus, List<String> candidateWords, List<String> baseWords,int levels){
 		//test associations
 		WordProcessor process = new WordProcessor(thesaurus);
-		Set<String> associations = process.getAssociations(args[1],Integer.parseInt(args[2]));
-		print(associations);
-		System.out.println(associations.size());
-		System.out.println(count(lines));
-		System.out.println(distinctCount(lines));
+		Map<String, Integer> baseWordAssociationsCount = process.countAssociations(candidateWords, baseWords, levels);
+		for (String baseWord : baseWords ) { 
+			System.out.println(baseWord + ": " + baseWordAssociationsCount.get(baseWord) );
+		}
 	}
 	
 	public static void print(Collection<String> collection){
@@ -33,7 +32,7 @@ public class Test {
 		}
 	}
 	
-	public static int count(ArrayList<String> lines){
+	public static int count(Collection<String> lines){
 		int count = 0;
 		for(String line : lines){
 			String[] words = line.split(",");
@@ -41,7 +40,7 @@ public class Test {
 		}return count;
 	}
 	
-	public static int distinctCount(ArrayList<String> lines){
+	public static int distinctCount(Collection<String> lines){
 		HashSet<String> set = new HashSet<String>();
 		for(String line : lines){
 			String[] words = line.split(",");
